@@ -1,0 +1,83 @@
+#include<iostream>
+using namespace std;
+
+typedef struct Node
+{
+	int coef;	//系数
+	int exp;	//指数
+	struct Node* next;
+}LinkNode;
+void CreateList(LinkNode* & L, int n)	//创建链表,n为项的个数
+{
+	LinkNode* s, * r;
+	L = (LinkNode*)malloc(sizeof(LinkNode));
+	r = L;
+	cout << "请逐个输入项的系数和指数" << endl;
+	for (int i = 0; i < n; i++)
+	{
+		s= (LinkNode*)malloc(sizeof(LinkNode));
+		cin >> s->coef >> s->exp;
+		r -> next = s;
+		r = s;
+	}
+	r->next = NULL;
+}
+void DisList(LinkNode*& L)	//输出
+{
+	LinkNode* p = L->next;
+	while (p != NULL)
+	{
+		cout << p->coef << "x^" << p->exp<<"+";
+		p = p->next;
+	}
+	cout << '/n';
+}
+LinkNode* multipy(LinkNode*& L1, LinkNode*& L2)	//相乘
+{
+	LinkNode * l1 = L1->next, * l2 = L2->next;
+	if (L1 != NULL && L2 != NULL)
+	{
+		while(l2!=NULL)
+		{
+			while(l1!=NULL)
+			{
+				l1->coef = l1->coef * l2->coef;
+				l1->exp = l1->exp + l2->exp;
+				l1 = l1->next;
+			}
+			l2 = l2->next;
+		}
+	}
+	return L1;
+}
+LinkNode* simplify(LinkNode*& h1)	//化简
+{
+	LinkNode* p1, * q1, * q2;
+	for (p1 = h1->next; p1; p1 = p1->next)
+		for (q1 = p1, q2 = q1->next; q2; q1 = q2, q2 = q2->next)
+			if (p1->exp == q2->exp)
+			{
+				p1->coef += q2->coef;
+				q1->next = q2->next;
+				delete q2;
+				q2 = q1;//q2=q1->next;
+			}
+	return h1;
+}
+int main()
+{
+	LinkNode* L1, *L2;
+	int l1, l2;
+	cout << "请输入多项式1项的个数";
+	cin >> l1;
+	CreateList(L1,l1);
+	DisList(L1);
+	cout << "请输入多项式2项的个数";
+	cin >> l2;
+	CreateList(L2, l2);
+	DisList(L2);
+	L1 = multipy(L1, L2);
+	simplify(L1);
+	DisList(L1);
+	return 0;
+}
