@@ -1,0 +1,212 @@
+#include <iostream>
+using namespace std;
+
+struct  Node    //链表节点，用来存放数据
+{
+	int data;   //数据，保存0-9
+	Node* next; //指向下一个节点的指针
+};
+Node* InputBigData();            //输入数据函数
+void OutputBigData(Node* node);   //输出链表数据函数
+void ReverseOutput(Node* p);      //链表翻转输出函数
+Node* ReverseList(Node* p);
+Node* BigDataAdd(Node* np1, Node* np2);    //两个大整数相加
+int main()
+{
+	cout << "input the first big data:" << endl;
+	Node* pHead1 = InputBigData();      //输入第一个大整数，指针pHead1指向大数的最低位
+	if (pHead1 == NULL)
+	{
+		cout << "input failed" << endl;
+		return 0;
+	}
+	cout << "the fisrt data is :" << endl;
+	ReverseOutput(pHead1);   //将第一个数反转，pTemp指向第一个大数的最高位
+	cout << endl;
+	cout << "input the second big data:" << endl;
+	Node* pHead2 = InputBigData();   //输入第二个大整数，pHead2指向第二个大整数的最低位
+	if (pHead2 == NULL)
+	{
+		cout << "input failed" << endl;
+		return 0;
+	}
+	cout << "the second data is:" << endl;
+	ReverseOutput(pHead2);   //反向输出pTemp指向链表中的数据，即输出第二个大整数
+	cout << endl;
+	Node* pLastData = BigDataAdd(pHead1, pHead2);   //将两个大整数相加，pLastData指向相加后的大整数的个位
+	OutputBigData(pLastData);    //按顺序输出pLastData指向的数据，该数为大整数的逆向输出
+	cout << endl;
+	cout << "the last data is:" << endl;
+	ReverseOutput(pLastData);   //逆向输出plastData指向的数据，该数为大整数
+	cout << endl;
+	cout << "reverse the list" << endl;
+	Node* TheAdd = ReverseList(pLastData);
+	cout << "Out put the reverse list:" << endl;
+	OutputBigData(TheAdd);
+	cout << endl;
+	return 0;
+}
+/**************************************************************************
+*Function:输入大整数的各位上的数0-9，为便于计算，返回的值是大整数的逆序
+*Parameter：
+*return: Node*   返回的指针指向的节点的下一个节点为最后输入的数据
+************************************************************************/
+Node* InputBigData()
+{
+	Node* pHead;   //定义两个Node指针，pHead的下一个节点指向输入数据始终指向最后输入的数据，即最低位
+	pHead = NULL;
+	Node* nHead = new Node();   //创建一个Node节点，该节点为第一个整数节点
+	nHead->next = NULL;
+	nHead->data = 0;
+	pHead = nHead;   //头指针和节点指针分别指向第一个节点
+	char c;
+	while ((c = getchar()) != '\n')   //获取最高位，必须为1-9
+	{
+		if ('1' <= c && '9' >= c)
+		{
+			pHead->data = c - '0'; //为最高位赋值
+			break;
+		}
+		else if ('0' == c)
+		{
+			continue;   //第一个输入的是0，不退出，继续输入，知道最高位为1-9
+		}
+		else
+		{
+			cout << " input error, exit 0" << endl;   //如果输入的数不为0-9，则退出
+			return NULL;
+		}
+	}
+	while ((c = getchar()) != '\n')   //循环输入整数，必须为0-9，回车结束
+	{
+		if ('0' <= c && '9' >= c)
+		{
+			Node* nTemp = new Node();   //创建输入数据的节点
+			nTemp->data = c - '0';
+			nTemp->next = pHead;  //将新数据节点插入到前一个数据数据的前面
+			pHead = nTemp;
+		}
+		else
+		{
+			cout << " input error, exit 0" << endl;   //如果输入的数不为0-9，则退出
+			return NULL;
+		}
+	}
+	return pHead;  //返回大整数的逆链表
+}
+/**************************************************************************
+*Function:按顺序输出存放大整数的链表
+*Parameter：node大整数链表的头指针
+*return: NULL
+************************************************************************/
+void OutputBigData(Node* node)
+{
+	while (node != NULL)
+	{
+		cout << node->data;
+		node = node->next;
+	}
+	cout << endl;
+}
+/**************************************************************************
+*Function:反向输出存放大整数的链表，递归实现
+*Parameter：sorP大整数链表的头指针
+*return: NULL
+************************************************************************/
+void ReverseOutput(Node* sorP)
+{
+	if (sorP != NULL)
+	{
+		if (sorP->next != NULL)
+		{
+			ReverseOutput(sorP->next);
+		}
+		cout << sorP->data;
+	}
+}
+/**************************************************************************
+*Function:翻转链表
+*Parameter：p链表头
+*return: Node* 翻转后的链表头
+************************************************************************/
+Node* ReverseList(Node* p)
+{
+	Node* pHead = p;  //反转过程中指向链表的头部
+	Node* pCurr = p;  //翻转过程中移动的节点
+	Node* pTail = p;  //始终指向原链表的，翻转完成后将指向目的链表的尾节点
+	pCurr = pCurr->next;
+	while (pCurr != NULL)
+	{
+		pTail->next = pCurr->next;
+		pCurr->next = pHead;
+		pHead = pCurr;
+		pCurr = pTail->next;
+	}
+	return pHead;
+}
+/**************************************************************************
+*Function:两个大整数从低位到高位依次相加，将相加的结果放到第一个大正整数，释放第二个大整数节点的内存
+*Parameter：np1第一个大整数， np2第二个大整数
+*return: Node* 指向相加后大正整数的逆序链表
+************************************************************************/
+Node* BigDataAdd(Node* np1, Node* np2)
+{
+	if (np1 == NULL && np2 == NULL)     //判断指向两个大正整数的链表是否为空
+	{
+		cout << "two data is empty" << endl;
+	}
+	int addpar = 0;     //记录进位
+	Node* pLastData;    //始终指向链表的头
+	Node* pTempData1;   //第一个大正整数的计算位
+	Node* pTempData2;   //第二个大正整数的计算位
+	Node* pDeleteNode;  //释放无用节点的内存
+	Node* pRemeNode;    //始终记录计算位所在节点
+	pLastData = pTempData1 = np1;  //将计算结果放到第一个大正整数链表
+	pTempData2 = np2;
+	int temp = 0;   //两个大整数相应位相加后的结果
+	while (pTempData1 != NULL && pTempData2 != NULL)
+	{
+		pDeleteNode = pTempData2;
+		temp = (pTempData1->data + pTempData2->data + addpar);  //两个大整数对应位相加，同时加上进位
+		cout << pTempData1->data << " + " << pTempData2->data << " + " << addpar << " = " << temp << endl;  //打印相加过程
+		pTempData1->data = temp % 10;  //将相加后的结果的个位赋值给第一个大整数的相应节点
+		addpar = temp / 10;  //取进位
+		pRemeNode = pTempData1; //记录计算位
+		pTempData1 = pTempData1->next;  //指向下一个节点
+		pTempData2 = pTempData2->next;  //指向下一个节点
+		delete pDeleteNode;   //释放第二个大整数计算后的节点的空间
+		pDeleteNode = NULL;
+	}
+	cout << "One of data is finished." << endl;
+	OutputBigData(pLastData);
+	if (pTempData1 == NULL)  //判断第一个大整数是否先完成计算，即判断第一个大整数是否比第二个大正整数位数短
+	{
+		pTempData1 = pRemeNode;
+		pTempData1->next = pTempData2;  //将第二个大整数的剩余节点连接到第一个大正整数链表上
+		pTempData1 = pTempData1->next;  //指向下一个节点
+	}
+	cout << "Deal with the Rest Data List" << endl;
+	OutputBigData(pLastData);
+	while (pTempData1 != NULL)   //剩余未计算节点与进位的计算处理，如果第二个大整数与第一个大整数位数相同，此处不运行
+	{
+		int temp = (pTempData1->data + addpar);
+		cout << pTempData1->data << " + " << addpar << " = " << temp << endl;
+		pTempData1->data = temp % 10;
+		addpar = temp / 10;
+		pRemeNode = pTempData1;
+		pTempData1 = pTempData1->next;
+	}
+	cout << "deal with the last data node" << endl;
+	OutputBigData(pLastData);
+	if (addpar > 0)  //链表所有位都参与计算完成，判断最后是否有进位，若有进位，则增加新节点存放进位
+	{
+		cout << "add par cross " << addpar << endl;
+		pTempData1 = pRemeNode;
+		Node* nTail = new Node();
+		nTail->data = addpar;
+		nTail->next = NULL;
+		pTempData1->next = nTail;
+	}
+	cout << "add succesfully" << endl;
+	return pLastData;
+}
